@@ -4,31 +4,22 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/akarsh12A/testing-.git'
-            }
-        }
-
-        stage('Check Python Version') {
-            steps {
-                sh 'python3 --version'
+                checkout scm
             }
         }
 
         stage('Run Python Script') {
             steps {
-                sh 'python3 sample.py'
+                sh 'python3 app.py'
             }
         }
     }
 
     post {
-        success {
-            echo '✅ Pipeline executed successfully!'
-        }
-        failure {
-            echo '❌ Pipeline failed.'
+        always {
+            archiveArtifacts artifacts: 'output.txt, output.html', fingerprint: true
         }
     }
 }
+
 
