@@ -15,21 +15,37 @@ pipeline {
             }
         }
 
-        stage('Stage 2 - Run Python App') {
+        stage('Stage 2 - Start Flask Server') {
+            steps {
+                echo 'Starting Flask server (if not already running)...'
+                sh '''
+                    if ! lsof -i:5000 >/dev/null 2>&1; then
+                        echo "Flask server not running. Starting it..."
+                        nohup python3 server.py > flask.log 2>&1 &
+                        sleep 3
+                    else
+                        echo "Flask server already running."
+                    fi
+                '''
+            }
+        }
+
+        stage('Stage 3 - Run Python App') {
             steps {
                 echo 'Running Python application...'
-                sh 'python3 sample.py'
+                sh 'python3 app.py'
                 echo '✅ All tests are done'
             }
         }
 
-        stage('Stage 3 - Send Output to Localhost Server') {
+        stage('Stage 4 - Send Output to Localhost Server') {
             steps {
                 echo 'Sending output to localhost server...'
                 sh '''
                     curl -X POST http://localhost:5000/jenkins-output \
                     -H "Content-Type: application/json" \
-                    -d @output.json
+                    -d @output.json \
+                    || echo "⚠️ Flask server not reachable, skipping send"
                 '''
             }
         }
@@ -38,7 +54,7 @@ pipeline {
     post {
         always {
             echo 'Archiving artifacts...'
-            archiveArtifacts artifacts: 'output.txt, output.html, output.json', fingerprint: true
+            archiveArtifacts artifacts: 'output.txt, output.html, output.json, flask.log', fingerprint: true
         }
     }
 }
