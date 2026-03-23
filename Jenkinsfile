@@ -42,7 +42,7 @@ pipeline {
             steps {
                 echo 'Sending output to localhost server...'
                 sh '''
-                    curl -X POST http://192.168.221.60:5000/jenkins-output \
+                    curl -X POST http://localhost:5000/jenkins-output \
                     -H "Content-Type: application/json" \
                     -d @output.json \
                     || echo "⚠️ Flask server not reachable, skipping send"
