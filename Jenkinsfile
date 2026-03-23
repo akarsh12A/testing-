@@ -28,20 +28,16 @@ pipeline {
 
                 echo '✅ All tests are done'
             }
-     }
+    }
 }
 
 post {
         always {
-            // Publish HTML report to Jenkins UI
-            publishHTML([
-                reportDir: '.',
-                reportFiles: 'output.html',
-                reportName: 'Python Output Report',
-                keepAll: true,
-                alwaysLinkToLastBuild: true
-            ])
+            echo 'Archiving build artifacts...'
+
+            archiveArtifacts artifacts: 'output.html, output.txt', fingerprint: true
         }
     }
+
 
 }
