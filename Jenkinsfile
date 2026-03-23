@@ -33,7 +33,7 @@ pipeline {
         stage('Stage 3 - Run Python App') {
             steps {
                 echo 'Running Python application...'
-                sh 'python3 app.py'
+                sh 'python3 sample.py'
                 echo '✅ All tests are done'
             }
         }
