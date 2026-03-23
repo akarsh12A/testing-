@@ -3,19 +3,14 @@ pipeline {
 
     stages {
 
-        stage('Stage 1 - Checkout and Pull') {
+        stage('Stage 1 - Checkout Code') {
             steps {
                 echo 'Checking out main branch...'
-
-                // Checkout repository
                 checkout scm
-
-                // Ensure we are on main branch and pull latest changes
                 sh '''
                     git checkout main
                     git pull origin main
                 '''
-
                 echo '✅ 1st test is done'
             }
         }
@@ -23,21 +18,27 @@ pipeline {
         stage('Stage 2 - Run Python App') {
             steps {
                 echo 'Running Python application...'
-
-                sh 'python3 sample.py'
-
+                sh 'python3 app.py'
                 echo '✅ All tests are done'
             }
-    }
-}
+        }
 
-post {
-        always {
-            echo 'Archiving build artifacts...'
-
-            archiveArtifacts artifacts: 'output.html, output.txt', fingerprint: true
+        stage('Stage 3 - Send Output to Localhost Server') {
+            steps {
+                echo 'Sending output to localhost server...'
+                sh '''
+                    curl -X POST http://localhost:5000/jenkins-output \
+                    -H "Content-Type: application/json" \
+                    -d @output.json
+                '''
+            }
         }
     }
 
-
+    post {
+        always {
+            echo 'Archiving artifacts...'
+            archiveArtifacts artifacts: 'output.txt, output.html, output.json', fingerprint: true
+        }
+    }
 }
