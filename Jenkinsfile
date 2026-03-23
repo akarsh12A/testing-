@@ -19,7 +19,7 @@ pipeline {
             steps {
                 echo 'Starting Flask server (if not already running)...'
                 sh '''
-                    if ! lsof -i:5000 >/dev/null 2>&1; then
+                    if ! lsof -i:6000 >/dev/null 2>&1; then
                         echo "Flask server not running. Starting it..."
                         nohup python3 server.py > flask.log 2>&1 &
                         sleep 3
@@ -42,7 +42,7 @@ pipeline {
             steps {
                 echo 'Sending output to localhost server...'
                 sh '''
-                    curl -X POST http://localhost:5000/jenkins-output \
+                    curl -X POST http://localhost:6000/jenkins-output \
                     -H "Content-Type: application/json" \
                     -d @output.json \
                     || echo "⚠️ Flask server not reachable, skipping send"
