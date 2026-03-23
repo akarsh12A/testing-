@@ -2,24 +2,32 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout Code') {
+
+        stage('Stage 1 - Checkout and Pull') {
             steps {
+                echo 'Checking out main branch...'
+
+                // Checkout repository
                 checkout scm
+
+                // Ensure we are on main branch and pull latest changes
+                sh '''
+                    git checkout main
+                    git pull origin main
+                '''
+
+                echo '✅ 1st test is done'
             }
         }
 
-        stage('Run Python Script') {
+        stage('Stage 2 - Run Python App') {
             steps {
-                sh 'python3 sample.py'
-            }
-        }
-    }
+                echo 'Running Python application...'
 
-    post {
-        always {
-            archiveArtifacts artifacts: 'output.txt, output.html', fingerprint: true
+                sh 'python3 sample.py'
+
+                echo '✅ All tests are done'
+            }
         }
     }
 }
-
-
