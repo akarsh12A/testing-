@@ -6,16 +6,15 @@ pipeline {
         SONAR_PROJECT_NAME = "Akarsh Python Sonar Project"
     }
 
-    stages {
-
-        stage('Set Up Python') {
-            steps {
-                sh '''
-                python3 --version
-                pip3 install --upgrade pip
-                '''
-            }
-        }
+    stage('Set Up Python') {
+    steps {
+        sh '''
+        python3 --version
+        python3 -m ensurepip --upgrade || true
+        python3 -m pip install --upgrade pip
+        '''
+    }
+}
 
         stage('Install Dependencies') {
             steps {
