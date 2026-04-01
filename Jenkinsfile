@@ -2,17 +2,11 @@ pipeline {
     agent any
 
     environment {
-        SONAR_PROJECT_KEY = "python-sample-project"
-        SONAR_PROJECT_NAME = "Python Sample Project"
+        SONAR_PROJECT_KEY = "akarsh-python-project"
+        SONAR_PROJECT_NAME = "Akarsh Python Sonar Project"
     }
 
     stages {
-
-        stage('Checkout Code') {
-            steps {
-                git 'https://github.com/akarsh12A/testing-.git'
-            }
-        }
 
         stage('Set Up Python') {
             steps {
@@ -41,7 +35,6 @@ pipeline {
                       -Dsonar.projectKey=$SONAR_PROJECT_KEY \
                       -Dsonar.projectName="$SONAR_PROJECT_NAME" \
                       -Dsonar.sources=. \
-                      -Dsonar.language=py \
                       -Dsonar.python.version=3
                     '''
                 }
@@ -49,3 +42,4 @@ pipeline {
         }
     }
 }
+``
