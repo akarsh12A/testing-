@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        sonarScanner 'SonarScanner'
+    }
+
     environment {
         SONAR_PROJECT_KEY = "akarsh-python-project"
         SONAR_PROJECT_NAME = "Akarsh Python Sonar Project"
@@ -35,7 +39,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube-Server') {
                     sh '''
-                    sonar-scanner \
+                    ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
                       -Dsonar.projectKey=$SONAR_PROJECT_KEY \
                       -Dsonar.projectName="$SONAR_PROJECT_NAME" \
                       -Dsonar.sources=. \
