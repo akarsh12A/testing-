@@ -1,25 +1,51 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Run Python Script') {
-            steps {
-                echo 'Running Python file...'
-                sh 'python3 sample.py'
-            }
-        }
+    environment {
+        SONAR_PROJECT_KEY = "python-sample-project"
+        SONAR_PROJECT_NAME = "Python Sample Project"
     }
 
-    post {
-        success {
-            echo '✅ Jenkins job SUCCESS'
+    stages {
+
+        stage('Checkout Code') {
+            steps {
+                git 'https://github.com/akarsh12A/testing-.git'
+            }
         }
-        failure {
-            echo '❌ Jenkins job FAILED'
+
+        stage('Set Up Python') {
+            steps {
+                sh '''
+                python3 --version
+                pip3 install --upgrade pip
+                '''
+            }
         }
-        always {
-            archiveArtifacts artifacts: 'output.txt, output.html, output.json', fingerprint: true
-            echo 'Artifacts archived'
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                if [ -f requirements.txt ]; then
+                    pip3 install -r requirements.txt
+                fi
+                '''
+            }
+        }
+
+        stage('Run SonarQube Scan') {
+            steps {
+                withSonarQubeEnv('SonarQube-Server') {
+                    sh '''
+                    sonar-scanner \
+                      -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+                      -Dsonar.projectName="$SONAR_PROJECT_NAME" \
+                      -Dsonar.sources=. \
+                      -Dsonar.language=py \
+                      -Dsonar.python.version=3
+                    '''
+                }
+            }
         }
     }
 }
