@@ -4,16 +4,18 @@ pipeline {
     environment {
         SONAR_PROJECT_KEY = "akarsh-python-project"
         SONAR_PROJECT_NAME = "Akarsh Python Sonar Project"
+        VENV_DIR = "venv"
     }
 
     stages {
 
-        stage('Set Up Python') {
+        stage('Set Up Python Virtual Environment') {
             steps {
                 sh '''
                 python3 --version
-                python3 -m ensurepip --upgrade || true
-                python3 -m pip install --upgrade pip
+                python3 -m venv $VENV_DIR
+                . $VENV_DIR/bin/activate
+                pip install --upgrade pip
                 '''
             }
         }
@@ -21,8 +23,9 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
+                . $VENV_DIR/bin/activate
                 if [ -f requirements.txt ]; then
-                    python3 -m pip install -r requirements.txt
+                    pip install -r requirements.txt
                 fi
                 '''
             }
